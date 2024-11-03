@@ -1,4 +1,3 @@
-import os
 import re
 import threading
 import time
@@ -6,7 +5,6 @@ from datetime import datetime
 import requests
 import pandas as pd
 from bs4 import BeautifulSoup
-from openpyxl.styles.builtins import title
 import schedule
 
 news1 = []
@@ -108,25 +106,31 @@ def main1():
         print(f'无法保存文件：{e}')
 
 def main2():
-    year=int(input('请输入想要查询的年份:'))
-    month=int(input('请输入想要查询的月份:'))
-    day=int(input('请输入想要查询的天:'))
-    query_date=datetime(year,month,day).date()
-    formatted_date1=query_date.strftime('%Y-%m/%d')
-    formatted_date2=query_date.strftime('%Y%m/%d')
-    URLS=['http://paper.people.com.cn/rmrb/html/'+formatted_date1+'/nbs.D110000renmrb_01.htm'
-            ,'https://xh.xhby.net/pc/layout/'+formatted_date2+'/node_1.html']
-    for URL in URLS:
-        if URL==URLS[0]:
-            get_1(URL,formatted_date1)
-        else:
-            get_2(URL)
-    news=news1+news2
-    df=pd.DataFrame(news)
-    try:
-        df.to_excel('news.xlsx', index=False)
-    except PermissionError as e:
-        print(f'无法保存文件：{e}')
+    while True:
+        input('请在下一行中按下Enter键执行查询任务，输入q退出：')
+        if input() == 'q':
+            print('你已退出查询任务')
+            break
+        year=int(input('请输入想要查询的年份:'))
+        month=int(input('请输入想要查询的月份:'))
+        day=int(input('请输入想要查询的天:'))
+        query_date=datetime(year,month,day).date()
+        formatted_date1=query_date.strftime('%Y-%m/%d')
+        formatted_date2=query_date.strftime('%Y%m/%d')
+        URLS=['http://paper.people.com.cn/rmrb/html/'+formatted_date1+'/nbs.D110000renmrb_01.htm'
+                ,'https://xh.xhby.net/pc/layout/'+formatted_date2+'/node_1.html']
+        for URL in URLS:
+            if URL==URLS[0]:
+                get_1(URL,formatted_date1)
+            else:
+                get_2(URL)
+        news=news1+news2
+        df=pd.DataFrame(news)
+        try:
+            df.to_excel('news.xlsx', index=False)
+        except PermissionError as e:
+            print(f'无法保存文件：{e}')
+
 
 def sche():
     schedule.every().day.at('08:00').do(main1)
